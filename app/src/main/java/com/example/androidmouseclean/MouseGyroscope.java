@@ -1,5 +1,7 @@
 package com.example.androidmouseclean;
 
+import android.util.Log;
+
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,7 +27,7 @@ public class MouseGyroscope extends MouseWithTyper{
     private final short MAX_VALUE_HORIZONTAL ;
     private final short MAX_VALUE_VERTICAL ;
 
-    private MouseGyroscope(short resolutionX,short resolutionY,int scrollSensitivity,String ip, int port){
+    private MouseGyroscope(short resolutionX,short resolutionY,float scrollSensitivity,String ip, int port){
         super(scrollSensitivity,ip,port);
         this.resolutionX             = resolutionX;
         this.resolutionY             = resolutionY;
@@ -35,10 +37,11 @@ public class MouseGyroscope extends MouseWithTyper{
         this.MAX_VALUE_VERTICAL      = (short)((resolutionY/2)-1);            // same
     }
 
-    public static MouseGyroscope getMouseGyroscope(int resolutionX,int resolutionY,int scrollSeniitivy,String ip, int port){
+    public static MouseGyroscope getMouseGyroscope(int resolutionX,int resolutionY,float scrollSeniitivy,String ip, int port){
         if(mouseGyroscope==null){
             mouseGyroscope = new MouseGyroscope((short) resolutionX,(short) resolutionY,scrollSeniitivy,ip,port);
         }
+
         return mouseGyroscope;
     }
 
@@ -46,15 +49,20 @@ public class MouseGyroscope extends MouseWithTyper{
 
     // gets the angles and converts it to coords
     @Override
-    public void move(float x, float y) {
+    public void move(float xPar, float yPar) {
             // setting X
-            short tempX = (short)(Math.toDegrees(x)/ANGLE_DETECT_HORIZONTAL);        // convert to coords with Angel_detect
-            if(tempX>-MAX_VALUE_HORIZONTAL&&tempX<MAX_VALUE_HORIZONTAL) x = tempX;   // do bounds checking
-            else x = (short)(MAX_VALUE_HORIZONTAL*(tempX/(Math.abs(tempX))));        // if out of bounds, get the sign and multiply by maxValue
+            short tempX = (short)(Math.toDegrees(xPar)/ANGLE_DETECT_HORIZONTAL);                       // convert to coords with Angel_detect
+            if(tempX >= -MAX_VALUE_HORIZONTAL && tempX <= MAX_VALUE_HORIZONTAL) this.x = tempX;        // do bounds checking
+            else this.x = (short)(MAX_VALUE_HORIZONTAL*(tempX/(Math.abs(tempX))));                     // if out of bounds, get the sign and multiply by maxValue
             // setting Y
-            short tempY = (short)(Math.toDegrees(y)/ANGLE_DETECT_VERTICAL);
-            if(tempY>-MAX_VALUE_VERTICAL&&tempX<MAX_VALUE_VERTICAL) y = tempY;
-            else y = (short)(MAX_VALUE_VERTICAL*(tempY/(Math.abs(tempY))));
+            short tempY = (short)(Math.toDegrees(yPar)/ANGLE_DETECT_VERTICAL);
+            if(tempY >= -MAX_VALUE_VERTICAL && tempY <= MAX_VALUE_VERTICAL) this.y = tempY;
+            else this.y = (short)(MAX_VALUE_VERTICAL*(tempY/(Math.abs(tempY))));
     }
 
+    @Override
+    protected void stop() {
+        super.stop();
+        mouseGyroscope = null;
+    }
 }

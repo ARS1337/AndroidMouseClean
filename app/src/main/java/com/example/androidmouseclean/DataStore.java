@@ -38,7 +38,6 @@ public class DataStore {
     }
 
     public Bundle getBundle(){
-        bundle = new Bundle();
         return bundle;
     }
 

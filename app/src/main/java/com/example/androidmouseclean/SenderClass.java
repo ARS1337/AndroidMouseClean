@@ -28,6 +28,7 @@ public class SenderClass
             Inet4Address ipAddr = (Inet4Address) InetAddress.getByName(ip);
             senderClass = new SenderClass(ipAddr,port);
             senderClass.socket = new DatagramSocket();
+            Log.i("buffer",senderClass.socket.getSendBufferSize()+" ");
         }
         return senderClass;
     }
